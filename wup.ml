@@ -1,9 +1,5 @@
 open Core
 
-let build_row date items = "<tr>\n<td class=\"date\">" ^ date ^ "</td>\n"
-                              ^ "<td><ul>"
-                              ^ (String.concat ~sep:"\n" items)
-                              ^ "</ul></td>\n</tr>\n\n"
 let render_attribute (name, value) =
     name ^ "=" ^ value
  
