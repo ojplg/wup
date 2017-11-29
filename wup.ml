@@ -34,7 +34,6 @@ let build_row data = render_element "tr"
                                     []
                                     (String.concat ~sep:"\n" data)
 
-
 let () = Out_channel.output_string stdout (build_row 
                                            [date_data "27-Nov-2017";
                                             build_td 
