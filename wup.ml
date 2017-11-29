@@ -1,5 +1,12 @@
 open Core
 
+type exercise_set = { exercise : string;
+                      sets : int;
+                      reps_per_set : int;
+                      weight : int }
+
+let squat_example = { exercise="Squat"; sets=5; reps_per_set=5; weight=155 }
+
 let render_attribute (name, value) =
     name ^ "=" ^ value
  
@@ -12,13 +19,7 @@ let render_element element attributes content =
           ^ content ^
       "</" ^ element ^ ">"
 
-let build_item exercise repetitions weight = render_element "li"
-                                             []
-                                             ( exercise 
-                                              ^ " - "
-                                              ^ repetitions
-                                              ^ "x"
-                                              ^ weight )
+let build_item content = render_element "li" [] content
 
 let build_list items = render_element "ul"
                                       []
@@ -34,10 +35,15 @@ let build_row data = render_element "tr"
                                     []
                                     (String.concat ~sep:"\n" data)
 
+let display set = set.exercise ^ " - " 
+                               ^ string_of_int (set.sets * set.reps_per_set)
+                               ^ "x"
+                               ^ string_of_int set.weight
+
 let () = Out_channel.output_string stdout (build_row 
                                            [date_data "27-Nov-2017";
                                             build_td 
-                                              (build_list [build_item "Squat"
-                                                                   "25"
-                                                                   "155"])])
+                                              (build_list [build_item 
+                                                             (display squat_example)
+                                                                   ])])
 
