@@ -65,13 +65,6 @@ let new_form = html
                         br empty;
                         tag "input" ~attrs:["type","submit";"value","Submit"] empty])
 
-let render_request req = (Request.request req).resource
-
-let foo_content req = `String (to_string (html @@ body @@ p (string (render_request req)))) |> respond'
-
-let get_parameter req name = try App.param req name
-                             with e -> Exn.to_string e ^ " " ^ Sexplib.Sexp.to_string_hum (Request.sexp_of_t req)
-
 let dumb_get opt = match opt with
                    | Some x -> x
                    | None -> raise Not_found
@@ -103,7 +96,6 @@ let handle_submission req = html @@ body @@ p (string (set_to_string (parse_para
 let app =
   App.empty 
   |> (get "/" ( ( fun req -> `String (to_string cow_content ) |> respond')  ))
-  |> (get "/foo" foo_content)
   |> (get "/new" begin fun req -> `String (to_string new_form) |> respond' end)
   |> (get "/submitset" begin fun req -> `String (to_string (handle_submission req)) |> respond' end)
 
