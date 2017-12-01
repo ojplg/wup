@@ -1,7 +1,6 @@
-open Opium.Std
-open Async
 open Core
 open Cow.Html
+open Opium.Std
 
 type exercise_set = { exercise : string;
                       sets : int;
@@ -33,11 +32,11 @@ let display set = set.exercise
 let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 
 let cow_content = html 
-                               @@ body 
-                                  @@ Cow.Html.Create.table ~flags:[] 
-                                                  ~row:(fun session -> [string session.date; 
-                                                                        sets_as_list session.sets]) 
-                                                  [example_session_1; example_session_2]
+                    @@ body 
+                      @@ Cow.Html.Create.table ~flags:[] 
+                                               ~row:(fun session -> [string session.date; 
+                                                                     sets_as_list session.sets]) 
+                                               [example_session_1; example_session_2]
 
 let label lbl = tag "label" (string lbl)
 
