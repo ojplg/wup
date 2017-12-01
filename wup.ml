@@ -8,9 +8,14 @@ type exercise_set = { exercise : string;
                       reps_per_set : int;
                       weight : int }
 
+type exercise_session = { date : string;
+                          sets : exercise_set list }
+
 let squat_example = { exercise="Squat"; sets=5; reps_per_set=5; weight=155 }
 let bench_example = { exercise="Bench"; sets=5; reps_per_set=5; weight=105 }
 let overhead_press_example = { exercise="Overhead Press"; sets=5; reps_per_set=5; weight=75 }
+
+let example_session = { date="27-Nov-2017"; sets=[squat_example; bench_example; overhead_press_example] }
 
 let display set = set.exercise 
                     ^ " - " 
@@ -23,8 +28,9 @@ let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 let cow_content = to_string @@ html 
                                @@ body 
                                   @@ Create.table ~flags:[] 
-                                                  ~row:(fun s -> [string "27-Nov-2017"; sets_as_list s]) 
-                                                  [[squat_example; bench_example; overhead_press_example]]
+                                                  ~row:(fun session -> [string session.date; 
+                                                                        sets_as_list session.sets]) 
+                                                  [example_session]
 
 let app =
   App.empty |> (get "/" begin fun req ->
