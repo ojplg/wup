@@ -1,7 +1,6 @@
 open Opium.Std
 open Async
 open Core
-open Cohttp.Request
 open Cow.Html
 
 type exercise_set = { exercise : string;
@@ -66,24 +65,40 @@ let new_form = html
                         br empty;
                         tag "input" ~attrs:["type","submit";"value","Submit"] empty])
 
-let render_request req = App.param req "foo"
+let render_request req = (Request.request req).resource
 
 let foo_content req = `String (to_string (html @@ body @@ p (string (render_request req)))) |> respond'
 
 let get_parameter req name = try App.param req name
-                             with e -> Exn.to_string e ^ " " 
+                             with e -> Exn.to_string e ^ " " ^ Sexplib.Sexp.to_string_hum (Request.sexp_of_t req)
 
-let parse_parameters req = let s = { exercise=get_parameter req "Movement";
-                                     sets=2;
-                                     reps_per_set=3;
-                                     weight=75 } in set_to_string s
-                                     (*
-                                     sets=int_of_string (App.param req "Sets");
-                                     reps_per_set=int_of_string (App.param req "Repetitions");
-                                     weight=int_of_string (App.param req "Weights") } in set_to_string s
-                                     *)
+let dumb_get opt = match opt with
+                   | Some x -> x
+                   | None -> raise Not_found
+
+let rec build_param_assoc_list assoc params = match params with
+                                              | []      -> assoc
+                                              | p :: tl -> let ps = String.split p ~on:'=' in 
+                                                             (dumb_get (List.nth ps 0), dumb_get (List.nth ps 1)) :: 
+                                                               build_param_assoc_list assoc tl
+
+let extract_query_parameters req = let url = (Request.request req).resource in 
+                                     let idx = dumb_get (String.index url '?') in 
+                                       let len = (String.length url) - idx in
+                                         let query = String.sub url (idx + 1) (len -1) in
+                                           let param_strings = String.split query ~on:'&' in
+                                             build_param_assoc_list [] param_strings 
+
+let find_string_param assoc key = List.Assoc.find_exn assoc ~equal:(fun x y->x=y) key
+let find_int_param ls k = int_of_string (find_string_param ls k)
+
+let parse_parameters req = let params = extract_query_parameters req in
+                                     { exercise=find_string_param params "Movement";
+                                     sets=find_int_param params "Sets";
+                                     reps_per_set=find_int_param params "Repetitions";
+                                     weight=find_int_param params "Weights" } 
                            
-let handle_submission req = html @@ body @@ p (string (parse_parameters req))
+let handle_submission req = html @@ body @@ p (string (set_to_string (parse_parameters req)))
 
 let app =
   App.empty 
