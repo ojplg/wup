@@ -41,6 +41,8 @@ let select form_id opts = tag "select"
                               ~attrs:["form", form_id] 
                               (list (List.map opts (fun opt -> tag "option" (string opt))))
 
+let weights = ["50";"55";"60";"65"]
+
 let new_form = html 
                @@ body
                   @@ tag "form" ~attrs:["id","new_set";"action","submit_set"]
@@ -53,6 +55,9 @@ let new_form = html
                         br empty;
                         label "Repetitions";
                         select "new_set" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
+                        br empty;
+                        label "Weight";
+                        select "new_set" weights;
                         br empty;
                         tag "input" ~attrs:["type","submit";"value","Submit"] empty])
 
