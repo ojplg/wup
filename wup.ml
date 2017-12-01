@@ -60,6 +60,7 @@ let app =
   App.empty 
   |> (get "/" begin fun req -> `String cow_content |> respond' end)
   |> (get "/new" begin fun req -> `String (to_string new_form) |> respond' end)
+  |> (get "/submit_set" begin fun req -> `String "Submitted" |> respond' end)
 
 let () =
   app
