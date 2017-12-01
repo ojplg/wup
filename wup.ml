@@ -1,6 +1,7 @@
 open Opium.Std
 open Async
 open Core
+open Cow.Html
 
 type exercise_set = { exercise : string;
                       sets : int;
@@ -47,9 +48,13 @@ let example_content = render_element "html" [] (render_element "body" []
                                     build_td (build_list [build_item 
                                              (display squat_example)])]))
 
+let cow_content = to_string @@ html 
+                               @@ body 
+                                  @@ p @@ string "Hello"
+
 let app =
   App.empty |> (get "/" begin fun req ->
-  `String example_content |> respond'
+  `String cow_content |> respond'
   end)
 
 let () =
