@@ -35,10 +35,31 @@ let cow_content = to_string @@ html
                                                                         sets_as_list session.sets]) 
                                                   [example_session_1; example_session_2]
 
+let label lbl = tag "label" (string lbl)
+
+let select form_id opts = tag "select" 
+                              ~attrs:["form", form_id] 
+                              (list (List.map opts (fun opt -> tag "option" (string opt))))
+
+let new_form = html 
+               @@ body
+                  @@ tag "form" ~attrs:["id","new_set";"action","submit_set"]
+                     (list
+                       [label "Movement";
+                        select "new_set" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
+                        br empty;
+                        label "Sets";
+                        select "new_set" ["1"; "2"; "3"; "4"; "5"];
+                        br empty;
+                        label "Repetitions";
+                        select "new_set" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
+                        br empty;
+                        tag "input" ~attrs:["type","submit";"value","Submit"] empty])
+
 let app =
-  App.empty |> (get "/" begin fun req ->
-  `String cow_content |> respond'
-  end)
+  App.empty 
+  |> (get "/" begin fun req -> `String cow_content |> respond' end)
+  |> (get "/new" begin fun req -> `String (to_string new_form) |> respond' end)
 
 let () =
   app
