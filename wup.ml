@@ -1,3 +1,5 @@
+open Opium.Std
+open Async
 open Core
 
 type exercise_set = { exercise : string;
@@ -14,8 +16,8 @@ let render_attributes attributes =
     String.concat ~sep:" " (List.map attributes render_attribute)
 
 let render_element element attributes content =
-      "<" ^ element ^ ">"
-          ^ (render_attributes attributes) 
+      "<" ^ element 
+          ^ (render_attributes attributes) ^ ">"
           ^ content ^
       "</" ^ element ^ ">"
 
@@ -40,10 +42,17 @@ let display set = set.exercise ^ " - "
                                ^ "x"
                                ^ string_of_int set.weight
 
-let () = Out_channel.output_string stdout (build_row 
-                                           [date_data "27-Nov-2017";
-                                            build_td 
-                                              (build_list [build_item 
-                                                             (display squat_example)
-                                                                   ])])
+let example_content = render_element "html" [] (render_element "body" [] 
+                        (build_row [date_data "27-Nov-2017";
+                                    build_td (build_list [build_item 
+                                             (display squat_example)])]))
+
+let app =
+  App.empty |> (get "/" begin fun req ->
+  `String example_content |> respond'
+  end)
+
+let () =
+  app
+  |> App.run_command
 
