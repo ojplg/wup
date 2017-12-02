@@ -16,14 +16,12 @@ let dumb_get opt = match opt with
                    | Some x -> x
                    | None -> raise Not_found
 
-let parse_parameters req = let params = Http.extract_query_parameters req in
+let parse_set_from_request req = let params = Http.extract_query_parameters req in
                                           { exercise=Http.find_string_param params "Movement";
                                             sets=Http.find_int_param params "Sets";
                                             reps_per_set=Http.find_int_param params "Repetitions";
                                             weight=Http.find_int_param params "Weights" } 
                            
-let handle_submission req = html @@ body @@ p (string (set_to_string (parse_parameters req)))
-
 let home_page_binding = get "/" 
                           begin
                             fun req -> `String (to_string (Html.home_page [example_session_1;
@@ -37,11 +35,17 @@ let new_set_binding = get "/new"
                           |> respond'
                         end
 
+let submit_set_binding = get "/submitset"
+                           begin
+                             fun req -> `String (to_string (Html.simple_page (set_to_string (parse_set_from_request req))))
+                             |> respond'
+                           end
+
 let app =
   App.empty 
   |> home_page_binding
   |> new_set_binding
-  |> (get "/submitset" begin fun req -> `String (to_string (handle_submission req)) |> respond' end)
+  |> submit_set_binding
 
 let () =
   app
