@@ -1,6 +1,8 @@
 open Core
 open! Postgresql
 
+let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
+
 let print_conn_info conn =
   printf "db      = %s\n" conn#db;
   printf "user    = %s\n" conn#user;
@@ -10,17 +12,6 @@ let print_conn_info conn =
   printf "tty     = %s\n" conn#tty;
   printf "option  = %s\n" conn#options;
   printf "pid     = %i\n" conn#backend_pid
-
-let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
-
-(*
-let fetch_result c = wait_for_result c; c#get_result
-
-let fetch_single_result c =
-  match fetch_result c with
-  | None -> assert false
-  | Some r -> assert (fetch_result c = None); r
-*)
 
 let result_status res =
   match res#status with
@@ -45,6 +36,7 @@ let dump_out con =
   | Some res -> dump_result(res)
   | None     -> print_endline("No result found")
 
+(*
 let do_stuff =
   try
     let con = new connection ~conninfo:conn_str () in
@@ -56,3 +48,24 @@ let do_stuff =
   with | Postgresql.Error(m) -> print_endline ("postgres error \n " 
                                                 ^ string_of_error(m))
        | Not_found -> print_endline ("Something not found")
+*)
+
+let parse_session results idx =
+  ( results#getvalue idx 0, results#getvalue idx 1)
+
+let rec parse_sessions results idx sessions =
+  if idx < results#ntuples 
+    then parse_session results idx :: parse_sessions results (idx+1) sessions
+    else sessions
+
+let parse_session_results con =
+  match con#get_result with
+  | Some res -> parse_sessions res 0 []
+  | None     -> []
+
+let find_exercise_sessions =
+  try
+    let con = new connection ~conninfo:conn_str () in
+      con#send_query "select* from exercise_sessions";
+      parse_session_results con
+  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []

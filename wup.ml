@@ -52,7 +52,19 @@ let () =
   |> Opium.Std.App.run_command
 *)
 
+let rec sessions_out ss =
+  match ss with
+  | [] -> print_string "No more sessions\n"
+  | s :: tl -> print_string (fst s); 
+               print_string (" --> ");
+               print_string (snd s);
+               print_string("\n");
+               sessions_out tl
+
 let () = print_string "Start up\n";
-         print_string "Doing more\n";
-         Store.do_stuff;
-         print_string "And done\n"
+         let sessions = Store.find_exercise_sessions in
+           sessions_out sessions;
+           print_string "And done\n"
+
+
+
