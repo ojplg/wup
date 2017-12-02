@@ -1,3 +1,3 @@
 rm -f wup
-rm -f wup.cmi
-rm -f wup.cmo
+rm -f *.cmi
+rm -f *.cmo
