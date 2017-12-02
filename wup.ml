@@ -12,73 +12,35 @@ let deadlift_example = { exercise="Deadlift"; sets=2; reps_per_set=5; weight=135
 let example_session_1 = { date="27-Nov-2017"; sets=[squat_example; bench_example; barbell_row_example] }
 let example_session_2 = { date="30-Nov-2017"; sets=[squat_example; overhead_press_example; deadlift_example] }
 
-let display set = set.exercise 
-                    ^ " - " 
-                    ^ string_of_int (set.sets * set.reps_per_set)
-                    ^ "x"
-                    ^ string_of_int set.weight
-
-let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
-
-let cow_content = html 
-                    @@ body 
-                      @@ Cow.Html.Create.table ~flags:[] 
-                                               ~row:(fun session -> [string session.date; 
-                                                                     sets_as_list session.sets]) 
-                                               [example_session_1; example_session_2]
-
-let weights = ["50";"55";"60";"65"]
-
-let new_form = html 
-               @@ body
-                  @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
-                     (list
-                       [Html.label "Movement";
-                        Html.select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
-                        br empty;
-                        Html.label "Sets";
-                        Html.select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
-                        br empty;
-                        Html.label "Repetitions";
-                        Html.select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
-                        br empty;
-                        Html.label "Weight";
-                        Html.select "new_set" "Weights" weights;
-                        br empty;
-                        tag "input" ~attrs:["type","submit";"value","Submit"] empty])
-
 let dumb_get opt = match opt with
                    | Some x -> x
                    | None -> raise Not_found
 
-let rec build_param_assoc_list assoc params = match params with
-                                              | []      -> assoc
-                                              | p :: tl -> let ps = String.split p ~on:'=' in 
-                                                             (dumb_get (List.nth ps 0), dumb_get (List.nth ps 1)) :: 
-                                                               build_param_assoc_list assoc tl
-
-let extract_query_parameters req = let url = (Request.request req).resource in 
-                                     let idx = dumb_get (String.index url '?') in 
-                                       let len = (String.length url) - idx in
-                                         let query = String.sub url (idx + 1) (len -1) in
-                                           let param_strings = String.split query ~on:'&' in
-                                             build_param_assoc_list [] param_strings 
-
-let find_string_param assoc key = List.Assoc.find_exn assoc ~equal:(fun x y->x=y) key
-let find_int_param ls k = int_of_string (find_string_param ls k)
-
-let parse_parameters req = let params = extract_query_parameters req in
-                                     { exercise=find_string_param params "Movement";
-                                     sets=find_int_param params "Sets";
-                                     reps_per_set=find_int_param params "Repetitions";
-                                     weight=find_int_param params "Weights" } 
+let parse_parameters req = let params = Http.extract_query_parameters req in
+                                          { exercise=Http.find_string_param params "Movement";
+                                            sets=Http.find_int_param params "Sets";
+                                            reps_per_set=Http.find_int_param params "Repetitions";
+                                            weight=Http.find_int_param params "Weights" } 
                            
 let handle_submission req = html @@ body @@ p (string (set_to_string (parse_parameters req)))
 
+let home_page_binding = get "/" 
+                          begin
+                            fun req -> `String (to_string (Html.home_page [example_session_1;
+                                                                           example_session_2])) 
+                            |> respond'
+                          end
+
+let new_set_binding = get "/new"
+                        begin
+                          fun req -> `String (to_string Html.set_form) 
+                          |> respond'
+                        end
+
 let app =
   App.empty 
-  |> (get "/" ( ( fun req -> `String (to_string cow_content ) |> respond')  ))
-  |> (get "/new" begin fun req -> `String (to_string new_form) |> respond' end)
+  |> home_page_binding
+  |> new_set_binding
   |> (get "/submitset" begin fun req -> `String (to_string (handle_submission req)) |> respond' end)
 
 let () =
