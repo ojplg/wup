@@ -46,7 +46,13 @@ let app =
   |> new_set_binding
   |> submit_set_binding
 
+(*
 let () =
   app
   |> Opium.Std.App.run_command
+*)
 
+let () = print_string "Start up\n";
+         print_string "Doing more\n";
+         Store.do_stuff;
+         print_string "And done\n"
