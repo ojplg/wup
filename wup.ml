@@ -17,21 +17,27 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                            
 let home_page_binding = Opium.Std.get "/" 
                           begin
-                            fun req -> Html.render (Html.home_page [example_session_1;
-                                                                    example_session_2]) 
-                            |> Opium.Std.respond'
+                            fun req -> [example_session_1; example_session_2] 
+                              |> Html.home_page 
+                              |> Html.render
+                              |> Opium.Std.respond'
                           end
 
 let new_set_binding = Opium.Std.get "/new"
                         begin
-                          fun req -> Html.render Html.set_form 
-                          |> Opium.Std.respond'
+                          fun req -> Html.set_form 
+                            |> Html.render
+                            |> Opium.Std.respond'
                         end
 
 let submit_set_binding = Opium.Std.get "/submitset"
                            begin
-                             fun req -> Html.render (Html.simple_page (Model.set_to_string (parse_set_from_request req)))
-                             |> Opium.Std.respond'
+                             fun req -> req
+                               |> parse_set_from_request
+                               |> Model.set_to_string
+                               |> Html.simple_page
+                               |> Html.render
+                               |> Opium.Std.respond'
                            end
 
 let app =
