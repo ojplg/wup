@@ -38,29 +38,23 @@ let cow_content = html
                                                                      sets_as_list session.sets]) 
                                                [example_session_1; example_session_2]
 
-let label lbl = tag "label" (string lbl)
-
-let select form_id name opts = tag "select" 
-                                   ~attrs:["form", form_id; "name", name] 
-                                   (list (List.map opts (fun opt -> tag "option" (string opt))))
-
 let weights = ["50";"55";"60";"65"]
 
 let new_form = html 
                @@ body
                   @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
                      (list
-                       [label "Movement";
-                        select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
+                       [Html.label "Movement";
+                        Html.select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
                         br empty;
-                        label "Sets";
-                        select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
+                        Html.label "Sets";
+                        Html.select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
                         br empty;
-                        label "Repetitions";
-                        select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
+                        Html.label "Repetitions";
+                        Html.select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
                         br empty;
-                        label "Weight";
-                        select "new_set" "Weights" weights;
+                        Html.label "Weight";
+                        Html.select "new_set" "Weights" weights;
                         br empty;
                         tag "input" ~attrs:["type","submit";"value","Submit"] empty])
 
