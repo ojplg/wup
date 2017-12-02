@@ -22,16 +22,34 @@ let fetch_single_result c =
   | Some r -> assert (fetch_result c = None); r
 *)
 
+let result_status res =
+  match res#status with
+  | Empty_query -> print_endline("empty query")
+  | Command_ok -> print_endline("Command ok")
+  | Tuples_ok -> print_endline("Tuples ok")
+  | Bad_response -> print_endline("Bad response")
+  | Nonfatal_error -> print_endline("error")
+  | Fatal_error -> print_endline("fatal error " ^ res#error)
+  | _         -> print_endline("Do not know")
+
+let dump_result res = 
+  print_endline("have a result");
+  result_status res;
+  print_endline("number of tuples " ^ string_of_int(res#ntuples));
+  print_endline("number of nfields " ^ string_of_int(res#nfields))
+
+let dump_out con = 
+  match con#get_result with
+  | Some res -> dump_result(res)
+  | None     -> print_endline("No result found")
+
 let do_stuff =
   try
     let con = new connection ~conninfo:conn_str () in
       print_conn_info con;
-      let res = con#prepare "select trial" "select * from exercise_sessions" in
-        print_endline("prepared");
-        con#exec_prepared "select trial";
-        let num = res#fnumber "id" in
-          print_endline("found " ^ (string_of_int) num);
-        print_endline("and done");
+      con#send_query "select * from exercise_sessions";
+      dump_out con;
+      print_endline("and done");
       (*   print_endline(" found record number " ^ (res#fname 0)) *)
   with | Postgresql.Error(m) -> print_endline ("postgres error \n " 
                                                 ^ string_of_error(m))
