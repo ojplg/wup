@@ -36,7 +36,9 @@ let dump_result res =
   print_endline("have a result");
   result_status res;
   print_endline("number of tuples " ^ string_of_int(res#ntuples));
-  print_endline("number of nfields " ^ string_of_int(res#nfields))
+  print_endline("number of nfields " ^ string_of_int(res#nfields));
+  print_endline("id is " ^ (res#getvalue 0 0));
+  print_endline("date is " ^ (res#getvalue 0 1))
 
 let dump_out con = 
   match con#get_result with
