@@ -1,3 +1,11 @@
 eval `opam config env`
 
-ocamlfind ocamlc -linkpkg -thread -package core,async,opium,cow util.ml http.ml model.ml html.ml wup.ml -o wup
+PACKAGES=async\
+,core\
+,cow\
+,opium\
+,postgresql
+
+FILES="util.ml model.ml http.ml html.ml wup.ml"
+
+ocamlfind ocamlc -linkpkg -thread -package $PACKAGES $FILES -o wup
