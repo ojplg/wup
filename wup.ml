@@ -1,6 +1,5 @@
 open Core
 open Model
-open Cow.Html
 open Opium.Std
 
 let squat_example = { exercise="Squat"; sets=5; reps_per_set=5; weight=155 }
@@ -24,20 +23,20 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                            
 let home_page_binding = get "/" 
                           begin
-                            fun req -> `String (to_string (Html.home_page [example_session_1;
-                                                                           example_session_2])) 
+                            fun req -> Html.render (Html.home_page [example_session_1;
+                                                                    example_session_2]) 
                             |> respond'
                           end
 
 let new_set_binding = get "/new"
                         begin
-                          fun req -> `String (to_string Html.set_form) 
+                          fun req -> Html.render Html.set_form 
                           |> respond'
                         end
 
 let submit_set_binding = get "/submitset"
                            begin
-                             fun req -> `String (to_string (Html.simple_page (set_to_string (parse_set_from_request req))))
+                             fun req -> Html.render (Html.simple_page (set_to_string (parse_set_from_request req)))
                              |> respond'
                            end
 

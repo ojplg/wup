@@ -45,3 +45,5 @@ let set_form = html
 
 
 let simple_page content = html @@ body @@ p (string content)
+
+let render h = `String (to_string h)
