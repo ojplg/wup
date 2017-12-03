@@ -1,10 +1,10 @@
 open Core
 
-let squat_example = { Model.exercise="Squat"; sets=5; reps_per_set=5; weight=155; session_id="7" }
-let bench_example = { Model.exercise="Bench"; sets=5; reps_per_set=5; weight=105 ; session_id="7"}
-let barbell_row_example = { Model.exercise="Barbell Row"; sets=5; reps_per_set=5; weight=75 ; session_id="7"}
-let overhead_press_example = { Model.exercise="Overhead Press"; sets=5; reps_per_set=5; weight=75 ; session_id="7"}
-let deadlift_example = { Model.exercise="Deadlift"; sets=2; reps_per_set=5; weight=135 ; session_id="7"}
+let squat_example = { Model.exercise="Squat"; sets=5; reps_per_set=5; weight=155; session_id=7 }
+let bench_example = { Model.exercise="Bench"; sets=5; reps_per_set=5; weight=105 ; session_id=7}
+let barbell_row_example = { Model.exercise="Barbell Row"; sets=5; reps_per_set=5; weight=75 ; session_id=7}
+let overhead_press_example = { Model.exercise="Overhead Press"; sets=5; reps_per_set=5; weight=75 ; session_id=7}
+let deadlift_example = { Model.exercise="Deadlift"; sets=2; reps_per_set=5; weight=135 ; session_id=7}
 
 let example_session_1 = { Model.date="27-Nov-2017"; sets=[squat_example; bench_example; barbell_row_example] }
 let example_session_2 = { Model.date="30-Nov-2017"; sets=[squat_example; overhead_press_example; deadlift_example] }
@@ -14,7 +14,7 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                                             sets=Http.find_int_param params "Sets";
                                             reps_per_set=Http.find_int_param params "Repetitions";
                                             weight=Http.find_int_param params "Weights";
-                                            session_id = ""; } 
+                                            session_id = -1; } 
                            
 let home_page_binding = Opium.Std.get "/" 
                           begin

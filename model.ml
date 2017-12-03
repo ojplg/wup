@@ -1,7 +1,7 @@
 open Core
 
 type exercise_set = { exercise : string;
-                      session_id : string;
+                      session_id : int;
                       sets : int;
                       reps_per_set : int;
                       weight : int }

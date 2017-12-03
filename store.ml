@@ -25,7 +25,7 @@ let result_status res =
   | _         -> print_endline("Do not know")
 
 let parse_session results idx =
-  ( results#getvalue idx 0, results#getvalue idx 1)
+  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
 
 let rec parse_sessions results idx sessions =
   if idx < results#ntuples 
@@ -50,7 +50,7 @@ let parse_set results idx =
     sets=int_of_string(results#getvalue idx 3);
     reps_per_set=int_of_string(results#getvalue idx 4);
     weight=int_of_string(results#getvalue idx 5);
-    session_id=results#getvalue idx 1;
+    session_id=int_of_string(results#getvalue idx 1);
   }
 
 let rec parse_sets results idx sets =
