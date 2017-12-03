@@ -41,7 +41,7 @@ let submit_set_binding = Opium.Std.get "/submitset"
                                |> Opium.Std.respond'
                            end
 
-let submit_session_binding = Opium.Std.get "submitsession"
+let submit_session_binding = Opium.Std.get "/submitsession"
                                begin
                                  fun req -> "2016-10-12"
                                    |> Store.insert_session
