@@ -24,21 +24,6 @@ let result_status res =
   | Fatal_error -> print_endline("fatal error " ^ res#error)
   | _         -> print_endline("Do not know")
 
-let parse_data_results con data_parser =
-  match con#get_result with
-  | Some res -> data_parser res 0 []
-  | None     -> []
-
-let find_all_data query data_parser =
-  try
-    let con = new connection ~conninfo:conn_str () in
-      con#send_query query;
-      parse_data_results con data_parser
-  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
-
-let parse_session_tuple results idx =
-  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
-
 let rec parse_results_recurse results idx ls datum_parser =
   if idx < results#ntuples
   then datum_parser results idx :: parse_results_recurse results (idx+1) ls datum_parser
@@ -47,12 +32,24 @@ let rec parse_results_recurse results idx ls datum_parser =
 let parse_results_to_list results datum_parser = 
   parse_results_recurse results 0 [] datum_parser
 
-let parse_sessions results idx sessions =
-  parse_results_to_list results parse_session_tuple
+let parse_data_results con datum_parser =
+  match con#get_result with
+  | Some res -> parse_results_to_list res datum_parser
+  | None     -> []
+
+let find_all_data query datum_parser =
+  try
+    let con = new connection ~conninfo:conn_str () in
+      con#send_query query;
+      parse_data_results con datum_parser
+  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+
+let parse_session_tuple results idx =
+  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
 
 let find_exercise_sessions = find_all_data 
                               "select * from exercise_sessions" 
-                              parse_sessions
+                              parse_session_tuple
 
 let parse_set results idx =
   { 
@@ -63,12 +60,9 @@ let parse_set results idx =
     session_id=int_of_string(results#getvalue idx 1);
   }
 
-let parse_sets results idx sets =
-  parse_results_to_list results parse_set
-
 let find_exercise_sets = find_all_data 
                            "select * from exercise_sets" 
-                           parse_sets
+                           parse_set
 
 let find_all_sessions =
   let ss = find_exercise_sessions in
