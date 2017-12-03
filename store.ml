@@ -24,25 +24,35 @@ let result_status res =
   | Fatal_error -> print_endline("fatal error " ^ res#error)
   | _         -> print_endline("Do not know")
 
-let parse_session results idx =
-  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
-
-let rec parse_sessions results idx sessions =
-  if idx < results#ntuples 
-    then parse_session results idx :: parse_sessions results (idx+1) sessions
-    else sessions
-
-let parse_session_results con =
+let parse_data_results con data_parser =
   match con#get_result with
-  | Some res -> parse_sessions res 0 []
+  | Some res -> data_parser res 0 []
   | None     -> []
 
-let find_exercise_sessions =
+let find_all_data query data_parser =
   try
     let con = new connection ~conninfo:conn_str () in
-      con#send_query "select* from exercise_sessions";
-      parse_session_results con
+      con#send_query query;
+      parse_data_results con data_parser
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+
+let parse_session_tuple results idx =
+  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
+
+let rec parse_results_recurse results idx ls datum_parser =
+  if idx < results#ntuples
+  then datum_parser results idx :: parse_results_recurse results (idx+1) ls datum_parser
+  else ls
+
+let parse_results_to_list results datum_parser = 
+  parse_results_recurse results 0 [] datum_parser
+
+let parse_sessions results idx sessions =
+  parse_results_to_list results parse_session_tuple
+
+let find_exercise_sessions = find_all_data 
+                              "select * from exercise_sessions" 
+                              parse_sessions
 
 let parse_set results idx =
   { 
@@ -53,22 +63,12 @@ let parse_set results idx =
     session_id=int_of_string(results#getvalue idx 1);
   }
 
-let rec parse_sets results idx sets =
-  if idx < results#ntuples 
-    then parse_set results idx :: parse_sets results (idx+1) sets
-    else sets
+let parse_sets results idx sets =
+  parse_results_to_list results parse_set
 
-let parse_set_results con =
-  match con#get_result with
-  | Some res -> parse_sets res 0 []
-  | None     -> []
-
-let find_exercise_sets =
-  try 
-     let con = new connection ~conninfo:conn_str () in
-      con#send_query "select* from exercise_sets";
-      parse_set_results con
-  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+let find_exercise_sets = find_all_data 
+                           "select * from exercise_sets" 
+                           parse_sets
 
 let find_all_sessions =
   let ss = find_exercise_sessions in
