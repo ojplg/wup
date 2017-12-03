@@ -29,7 +29,7 @@ let rec parse_results_recurse results idx ls datum_parser =
   then datum_parser results idx :: parse_results_recurse results (idx+1) ls datum_parser
   else ls
 
-let parse_data_results con datum_parser =
+let execute_result_set con datum_parser =
   match con#get_result with
   | Some res -> parse_results_recurse res 0 [] datum_parser
   | None     -> []
@@ -38,7 +38,7 @@ let find_all_data query datum_parser =
   try
     let con = new connection ~conninfo:conn_str () in
       con#send_query query;
-      parse_data_results con datum_parser
+      execute_result_set con datum_parser
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
 
 let parse_session_tuple results idx =
