@@ -18,7 +18,7 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                            
 let home_page_binding = Opium.Std.get "/" 
                           begin
-                            fun req -> [example_session_1; example_session_2] 
+                            fun req -> Store.find_all_sessions
                               |> Html.home_page 
                               |> Html.render
                               |> Opium.Std.respond'
@@ -47,12 +47,11 @@ let app =
   |> new_set_binding
   |> submit_set_binding
 
-(*
 let () =
   app
   |> Opium.Std.App.run_command
-*)
 
+(*
 let rec sessions_out ss =
   match ss with
   | [] -> print_string "No more sessions\n"
@@ -65,5 +64,6 @@ let () = print_string "Start up\n";
            sessions_out sessions;
            print_string "And done\n"
 
+*)
 
 
