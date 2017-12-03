@@ -59,6 +59,8 @@ let find_exercise_sets = find_all_data
 
 (* EXERCISE_SESSION table *)
 
+let insert_sql = "insert into exercise_sessions (id, session_date) select nextval('exercise_session_seq'), date '2017-10-23'"
+
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
 
