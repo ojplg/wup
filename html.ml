@@ -18,10 +18,12 @@ let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 
 let home_page ss = html 
                     @@ body 
-                      @@ Create.table ~flags:[] 
+                      (list
+                        [p (string "Welcome");
+                        Create.table ~flags:[] 
                                       ~row:(fun session -> [string session.Model.date; 
                                                             sets_as_list session.sets]) 
-                                      ss
+                                      ss])
 
 let weights = ["50";"55";"60";"65"]
 

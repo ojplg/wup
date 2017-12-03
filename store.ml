@@ -32,7 +32,8 @@ let rec parse_results_recurse results idx ls datum_parser =
 
 let execute_result_set con datum_parser =
   match con#get_result with
-  | Some res -> parse_results_recurse res 0 [] datum_parser
+  | Some res -> print_endline("Found results with " ^ (string_of_int res#ntuples));
+                parse_results_recurse res 0 [] datum_parser;
   | None     -> []
 
 let find_all_data query datum_parser =
@@ -54,12 +55,20 @@ let parse_set results idx =
   }
 
 let find_exercise_sets = find_all_data 
-                           "select session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
+                           "select id,session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
                            parse_set
 
 (* EXERCISE_SESSION table *)
 
-let insert_sql = "insert into exercise_sessions (id, session_date) select nextval('exercise_session_seq'), date '2017-10-23'"
+let insert_sql = "insert into exercise_sessions (id, session_date) select nextval('exercise_session_seq'), date '$1'"
+
+let insert_session date_str = 
+  try
+    let con = new connection ~conninfo:conn_str () in
+      con#send_prepare "insert_sql" insert_sql;
+      con#send_query_prepared ~params:[|date_str|] "insert_sql";
+      3
+  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); -1
 
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
@@ -69,7 +78,9 @@ let find_exercise_sessions = find_all_data
                               parse_session_tuple
 
 let find_all_sessions =
+  print_endline("Finding sessions");
   let ss = find_exercise_sessions in
+    print_endline("Found some sessions " ^ (string_of_int (List.length ss)));
     let sets = find_exercise_sets in
       List.map ss 
                (fun sess_tuple-> 

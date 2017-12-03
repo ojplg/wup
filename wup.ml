@@ -41,11 +41,22 @@ let submit_set_binding = Opium.Std.get "/submitset"
                                |> Opium.Std.respond'
                            end
 
+let submit_session_binding = Opium.Std.get "submitsession"
+                               begin
+                                 fun req -> "2016-10-12"
+                                   |> Store.insert_session
+                                   |> string_of_int 
+                                   |> Html.simple_page
+                                   |> Html.render
+                                   |> Opium.Std.respond'
+                               end
+
 let app =
   Opium.Std.App.empty 
   |> home_page_binding
   |> new_set_binding
   |> submit_set_binding
+  |> submit_session_binding
 
 let () =
   app
