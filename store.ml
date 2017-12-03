@@ -64,6 +64,8 @@ let find_exercise_sets = find_all_data
 let find_all_sessions =
   let ss = find_exercise_sessions in
     let sets = find_exercise_sets in
-      List.map ss (fun sess_tuple-> { Model.date=snd sess_tuple;
-                                      sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
+      List.map ss 
+               (fun sess_tuple-> 
+                 { Model.date=snd sess_tuple;
+                   sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
       
