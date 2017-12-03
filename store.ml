@@ -66,6 +66,9 @@ let insert_session date_str =
   try
     let con = new connection ~conninfo:conn_str () in
       con#send_prepare "insert_sql" insert_sql;
+      let res=con#get_result in
+        print_endline("prepare has status " );
+        result_status(Util.opt_get(res));
       con#send_query_prepared ~params:[|date_str|] "insert_sql";
       3
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); -1
