@@ -46,15 +46,15 @@ let find_all_data query datum_parser =
 
 let parse_set results idx =
   { 
+    session_id=int_of_string(results#getvalue idx 1);
     Model.exercise=results#getvalue idx 2;
     sets=int_of_string(results#getvalue idx 3);
     reps_per_set=int_of_string(results#getvalue idx 4);
     weight=int_of_string(results#getvalue idx 5);
-    session_id=int_of_string(results#getvalue idx 1);
   }
 
 let find_exercise_sets = find_all_data 
-                           "select * from exercise_sets" 
+                           "select session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
                            parse_set
 
 (* EXERCISE_SESSION table *)
@@ -63,7 +63,7 @@ let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
 
 let find_exercise_sessions = find_all_data 
-                              "select * from exercise_sessions" 
+                              "select id,session_date from exercise_sessions" 
                               parse_session_tuple
 
 let find_all_sessions =
