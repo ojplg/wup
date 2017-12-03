@@ -1,6 +1,5 @@
 open Core
 open! Postgresql
-open Model
 
 let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
 
@@ -24,6 +23,8 @@ let result_status res =
   | Fatal_error -> print_endline("fatal error " ^ res#error)
   | _         -> print_endline("Do not know")
 
+(* framework functions - find all functions *)
+
 let rec parse_results_recurse results idx ls datum_parser =
   if idx < results#ntuples
   then datum_parser results idx :: parse_results_recurse results (idx+1) ls datum_parser
@@ -41,12 +42,7 @@ let find_all_data query datum_parser =
       execute_result_set con datum_parser
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
 
-let parse_session_tuple results idx =
-  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
-
-let find_exercise_sessions = find_all_data 
-                              "select * from exercise_sessions" 
-                              parse_session_tuple
+(* EXERCISE_SET table *)
 
 let parse_set results idx =
   { 
@@ -60,6 +56,15 @@ let parse_set results idx =
 let find_exercise_sets = find_all_data 
                            "select * from exercise_sets" 
                            parse_set
+
+(* EXERCISE_SESSION table *)
+
+let parse_session_tuple results idx =
+  ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
+
+let find_exercise_sessions = find_all_data 
+                              "select * from exercise_sessions" 
+                              parse_session_tuple
 
 let find_all_sessions =
   let ss = find_exercise_sessions in
