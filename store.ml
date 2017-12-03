@@ -1,5 +1,6 @@
 open Core
 open! Postgresql
+open Model
 
 let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
 
@@ -23,33 +24,6 @@ let result_status res =
   | Fatal_error -> print_endline("fatal error " ^ res#error)
   | _         -> print_endline("Do not know")
 
-let dump_result res = 
-  print_endline("have a result");
-  result_status res;
-  print_endline("number of tuples " ^ string_of_int(res#ntuples));
-  print_endline("number of nfields " ^ string_of_int(res#nfields));
-  print_endline("id is " ^ (res#getvalue 0 0));
-  print_endline("date is " ^ (res#getvalue 0 1))
-
-let dump_out con = 
-  match con#get_result with
-  | Some res -> dump_result(res)
-  | None     -> print_endline("No result found")
-
-(*
-let do_stuff =
-  try
-    let con = new connection ~conninfo:conn_str () in
-      print_conn_info con;
-      con#send_query "select * from exercise_sessions";
-      dump_out con;
-      print_endline("and done");
-      (*   print_endline(" found record number " ^ (res#fname 0)) *)
-  with | Postgresql.Error(m) -> print_endline ("postgres error \n " 
-                                                ^ string_of_error(m))
-       | Not_found -> print_endline ("Something not found")
-*)
-
 let parse_session results idx =
   ( results#getvalue idx 0, results#getvalue idx 1)
 
@@ -69,3 +43,36 @@ let find_exercise_sessions =
       con#send_query "select* from exercise_sessions";
       parse_session_results con
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+
+let parse_set results idx =
+  { 
+    Model.exercise=results#getvalue idx 2;
+    sets=int_of_string(results#getvalue idx 3);
+    reps_per_set=int_of_string(results#getvalue idx 4);
+    weight=int_of_string(results#getvalue idx 5);
+    session_id=results#getvalue idx 1;
+  }
+
+let rec parse_sets results idx sets =
+  if idx < results#ntuples 
+    then parse_set results idx :: parse_sets results (idx+1) sets
+    else sets
+
+let parse_set_results con =
+  match con#get_result with
+  | Some res -> parse_sets res 0 []
+  | None     -> []
+
+let find_exercise_sets =
+  try 
+     let con = new connection ~conninfo:conn_str () in
+      con#send_query "select* from exercise_sets";
+      parse_set_results con
+  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+
+let find_all_sessions =
+  let ss = find_exercise_sessions in
+    let sets = find_exercise_sets in
+      List.map ss (fun sess_tuple-> { Model.date=snd sess_tuple;
+                                      sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
+      
