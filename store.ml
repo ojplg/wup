@@ -29,12 +29,9 @@ let rec parse_results_recurse results idx ls datum_parser =
   then datum_parser results idx :: parse_results_recurse results (idx+1) ls datum_parser
   else ls
 
-let parse_results_to_list results datum_parser = 
-  parse_results_recurse results 0 [] datum_parser
-
 let parse_data_results con datum_parser =
   match con#get_result with
-  | Some res -> parse_results_to_list res datum_parser
+  | Some res -> parse_results_recurse res 0 [] datum_parser
   | None     -> []
 
 let find_all_data query datum_parser =
