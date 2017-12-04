@@ -61,17 +61,18 @@ let find_exercise_sets con_str = find_all_data
 
 (* EXERCISE_SESSION table *)
 
-let insert_sql = "insert into exercise_sessions (id, session_date) select nextval('exercise_session_seq'), date '$1'"
+let insert_sql date_str =
+       "insert into exercise_sessions (id, session_date) " 
+           ^ "select nextval('exercise_session_seq'), '" ^ date_str ^ "'"
 
 let insert_session date_str = 
   print_endline "doing insert";
   try
     let con = new connection ~conninfo:conn_str () in
-      con#send_prepare "insert_sql" insert_sql;
+      con#send_query (insert_sql date_str);
       let res=con#get_result in
         print_endline("prepare has status " );
         result_status(Util.opt_get(res));
-      con#send_query_prepared ~params:[|date_str|] "insert_sql";
       3
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); -1
 

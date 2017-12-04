@@ -16,6 +16,9 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                                             weight=Http.find_int_param params "Weights";
                                             session_id = -1; } 
                            
+let parse_date_from_request req = 
+    Http.find_string_param (Http.extract_query_parameters req) "Date"
+      
 let home_page_binding = Opium.Std.get "/" 
                           begin
                             fun req -> print_endline("Serving home page"); 
@@ -44,7 +47,8 @@ let submit_set_binding = Opium.Std.get "/submitset"
 
 let submit_session_binding = Opium.Std.get "/submitsession"
                                begin
-                                 fun req -> "2016-10-12"
+                                 fun req -> req 
+                                   |> parse_date_from_request
                                    |> Store.insert_session
                                    |> string_of_int 
                                    |> Html.simple_page
@@ -62,5 +66,4 @@ let app =
 let () =
   app
   |> Opium.Std.App.run_command
-
 
