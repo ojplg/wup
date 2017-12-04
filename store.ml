@@ -1,5 +1,5 @@
 open Core
-open! Postgresql
+open Postgresql
 
 let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
 
@@ -36,9 +36,9 @@ let execute_result_set con datum_parser =
                 parse_results_recurse res 0 [] datum_parser;
   | None     -> []
 
-let find_all_data query datum_parser =
+let find_all_data con_str query datum_parser =
   try
-    let con = new connection ~conninfo:conn_str () in
+    let con = new connection ~conninfo:con_str () in
       con#send_query query;
       execute_result_set con datum_parser
   with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
@@ -54,15 +54,17 @@ let parse_set results idx =
     weight=int_of_string(results#getvalue idx 5);
   }
 
-let find_exercise_sets = find_all_data 
-                           "select id,session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
-                           parse_set
+let find_exercise_sets con_str = find_all_data 
+                         con_str
+                         "select id,session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
+                         parse_set
 
 (* EXERCISE_SESSION table *)
 
 let insert_sql = "insert into exercise_sessions (id, session_date) select nextval('exercise_session_seq'), date '$1'"
 
 let insert_session date_str = 
+  print_endline "doing insert";
   try
     let con = new connection ~conninfo:conn_str () in
       con#send_prepare "insert_sql" insert_sql;
@@ -76,17 +78,18 @@ let insert_session date_str =
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
 
-let find_exercise_sessions = find_all_data 
-                              "select id,session_date from exercise_sessions" 
-                              parse_session_tuple
+let find_exercise_sessions con_str = find_all_data 
+                                     con_str
+                                     "select id,session_date from exercise_sessions" 
+                                     parse_session_tuple
 
-let find_all_sessions =
+let find_all_sessions con_str =
   print_endline("Finding sessions");
-  let ss = find_exercise_sessions in
+  let ss = find_exercise_sessions con_str in
     print_endline("Found some sessions " ^ (string_of_int (List.length ss)));
-    let sets = find_exercise_sets in
+    let sets = find_exercise_sets con_str in
       List.map ss 
                (fun sess_tuple-> 
                  { Model.date=snd sess_tuple;
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
-      
+
