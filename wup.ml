@@ -6,8 +6,8 @@ let barbell_row_example = { Model.exercise="Barbell Row"; sets=5; reps_per_set=5
 let overhead_press_example = { Model.exercise="Overhead Press"; sets=5; reps_per_set=5; weight=75 ; session_id=7}
 let deadlift_example = { Model.exercise="Deadlift"; sets=2; reps_per_set=5; weight=135 ; session_id=7}
 
-let example_session_1 = { Model.date="27-Nov-2017"; sets=[squat_example; bench_example; barbell_row_example] }
-let example_session_2 = { Model.date="30-Nov-2017"; sets=[squat_example; overhead_press_example; deadlift_example] }
+let example_session_1 = { Model.date="27-Nov-2017"; id=4; sets=[squat_example; bench_example; barbell_row_example] }
+let example_session_2 = { Model.date="30-Nov-2017"; id=23; sets=[squat_example; overhead_press_example; deadlift_example] }
 
 let parse_set_from_request req = let params = Http.extract_query_parameters req in
                                           { Model.exercise=Http.find_string_param params "Movement";

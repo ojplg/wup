@@ -91,6 +91,7 @@ let find_all_sessions con_str =
     let sets = find_exercise_sets con_str in
       List.map ss 
                (fun sess_tuple-> 
-                 { Model.date=snd sess_tuple;
+                 { Model.id=fst sess_tuple;
+                   Model.date=snd sess_tuple;
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
 
