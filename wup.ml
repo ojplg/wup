@@ -14,7 +14,7 @@ let parse_set_from_request req = let params = Http.extract_query_parameters req 
                                             sets=Http.find_int_param params "Sets";
                                             reps_per_set=Http.find_int_param params "Repetitions";
                                             weight=Http.find_int_param params "Weights";
-                                            session_id = -1; } 
+                                            session_id = Http.find_int_param params "Session" } 
                            
 let parse_date_from_request req = 
     Http.find_string_param (Http.extract_query_parameters req) "Date"

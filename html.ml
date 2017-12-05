@@ -44,7 +44,7 @@ let set_form session_id =
       @@ body
         @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
              (list
-               [tag "input" ~attrs:["type","hidden";"value",session_id] empty;
+               [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
                 br empty;
                 label "Movement";
                 select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
