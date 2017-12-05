@@ -23,4 +23,4 @@ let set_to_string set =
 
 let session_to_string sess = 
     "Session. " ^ sess.date 
-     ^ String.concat ~sep:"\n" (List.map sess.sets set_to_string)
+      ^ String.concat ~sep:"\n" (List.map sess.sets set_to_string)
