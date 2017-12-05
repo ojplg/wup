@@ -1,6 +1,8 @@
 # wup
 Simple web application for some primitive CRUD operations for tracking exercise. I am working on this to learn OCaml.
 
+I do not understand the OCaml pakaging and build system, so things are even more crufty and primitive than my usual low standard.
+
 # Random thoughts about OCaml
 
 1) Compiler seems lame. Only finds one error at a time and then gives up.
