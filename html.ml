@@ -1,6 +1,14 @@
 open Core
 open Cow.Html
 
+let rec build_list_recur low high increment ls =
+  if low > high 
+    then ls
+    else low :: build_list_recur (low+increment) high increment ls
+
+let build_list low high increment =
+  List.rev (List.map (build_list_recur low high increment []) string_of_int)
+
 let label lbl = tag "label" (string lbl)
 
 let select form_id name opts = tag "select" 
@@ -37,7 +45,8 @@ let home_page ss =
             ]
           )
 
-let weights = ["50";"55";"60";"65"]
+let weights = build_list 65 185 5
+let five_to_one = build_list 1 5 1
 
 let set_form session_id = 
     html 
@@ -50,10 +59,10 @@ let set_form session_id =
                 select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
                 br empty;
                 label "Sets";
-                select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
+                select "new_set" "Sets" five_to_one;
                 br empty;
                 label "Repetitions";
-                select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
+                select "new_set" "Repetitions" five_to_one;
                 br empty;
                 label "Weight";
                 select "new_set" "Weights" weights;
