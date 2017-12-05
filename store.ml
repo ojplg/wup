@@ -73,8 +73,8 @@ let insert_session date_str =
       let res=con#get_result in
         print_endline("prepare has status " );
         result_status(Util.opt_get(res));
-      3
-  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); -1
+    "OK"
+  with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
 
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)

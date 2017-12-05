@@ -50,7 +50,6 @@ let submit_session_binding = Opium.Std.get "/submitsession"
                                  fun req -> req 
                                    |> parse_date_from_request
                                    |> Store.insert_session
-                                   |> string_of_int 
                                    |> Html.simple_page
                                    |> Html.render
                                    |> Opium.Std.respond'
