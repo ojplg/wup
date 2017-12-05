@@ -5,3 +5,4 @@ Random thoughts:
 3) The way no-arg functions are considered constant and can run at start of a program is odd to me. Functions are not always pure, and can read some outside state. Haskell's way of handling this through IO Monad seems more solid. Very possible I am missing things here.
 4) Postgres library seems weakly typed. Why handle everything is strings. Java does much better here. Again, I could be missing a lot of things here.
 5) I do love the great specificity of type errors with line and character given. Seems easier than GHC.
+6) I miss list comprehensions

@@ -59,6 +59,23 @@ let find_exercise_sets con_str = find_all_data
                          "select id,session_id,exercise,sets,reps_per_set,weight from exercise_sets" 
                          parse_set
 
+let insert_set_sql set =
+    "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "
+      ^ "select nextval('exercise_set_seq'), " 
+      ^ string_of_int(set.Model.session_id) ^ ", "
+      ^ set.exercise ^ ", "
+      ^ string_of_int(set.sets) ^ ", "
+      ^ string_of_int(set.reps_per_set) ^ ", "
+      ^ string_of_int(set.weight) ^ ", "
+
+let insert_exercise_set con_str set =
+  print_endline "doing set insert";
+  try
+    let con = new connection ~conninfo:conn_str () in
+      con#send_query(insert_set_sql set);
+      "OK"
+  with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
+
 (* EXERCISE_SESSION table *)
 
 let insert_sql date_str =
@@ -66,7 +83,7 @@ let insert_sql date_str =
            ^ "select nextval('exercise_session_seq'), '" ^ date_str ^ "'"
 
 let insert_session date_str = 
-  print_endline "doing insert";
+  print_endline "doing session insert";
   try
     let con = new connection ~conninfo:conn_str () in
       con#send_query (insert_sql date_str);
