@@ -28,9 +28,10 @@ let home_page_binding = Opium.Std.get "/"
                               |> Opium.Std.respond'
                           end
 
-let new_set_binding = Opium.Std.get "/new"
+let new_set_binding = Opium.Std.get "/newset/:session_id"
                         begin
-                          fun req -> Html.set_form 
+                          fun req -> Opium.Std.param req "session_id"
+                            |> Html.set_form 
                             |> Html.render
                             |> Opium.Std.respond'
                         end

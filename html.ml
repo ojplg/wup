@@ -16,14 +16,18 @@ let display set = set.Model.exercise
 
 let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 
+let session_link id date_str =
+  let url = Uri.of_string("/newset/" ^ string_of_int(id)) in
+    a url (string date_str)
+
 let home_page ss = 
       html 
         @@ body 
           (list
             [p (string "Welcome");
              Create.table ~flags:[] 
-               ~row:(fun session -> [string session.Model.date; 
-                                      sets_as_list session.sets]) 
+               ~row:(fun session -> [session_link session.Model.id session.Model.date; 
+                                     sets_as_list session.sets]) 
                ss;
              p (string "Enter new session date below!");
              tag "form" ~attrs:["id","new_session";"action","/submitsession"]
@@ -35,23 +39,26 @@ let home_page ss =
 
 let weights = ["50";"55";"60";"65"]
 
-let set_form = html 
-               @@ body
-                  @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
-                     (list
-                       [label "Movement";
-                        select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
-                        br empty;
-                        label "Sets";
-                        select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
-                        br empty;
-                        label "Repetitions";
-                        select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
-                        br empty;
-                        label "Weight";
-                        select "new_set" "Weights" weights;
-                        br empty;
-                        tag "input" ~attrs:["type","submit";"value","Submit"] empty])
+let set_form session_id = 
+    html 
+      @@ body
+        @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
+             (list
+               [tag "input" ~attrs:["type","hidden";"value",session_id] empty;
+                br empty;
+                label "Movement";
+                select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
+                br empty;
+                label "Sets";
+                select "new_set" "Sets" ["1"; "2"; "3"; "4"; "5"];
+                br empty;
+                label "Repetitions";
+                select "new_set" "Repetitions" ["1"; "2"; "3"; "4"; "5"; "6"; "7"; "8"; "9"; "10"];
+                br empty;
+                label "Weight";
+                select "new_set" "Weights" weights;
+                br empty;
+                tag "input" ~attrs:["type","submit";"value","Submit"] empty])
 
 
 let simple_page content = html @@ body @@ p (string content)
