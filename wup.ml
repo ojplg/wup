@@ -40,7 +40,7 @@ let submit_set_binding = Opium.Std.get "/submitset"
                            begin
                              fun req -> req
                                |> parse_set_from_request
-                               |> Model.set_to_string
+                               |> Store.insert_exercise_set 
                                |> Html.simple_page
                                |> Html.render
                                |> Opium.Std.respond'

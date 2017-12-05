@@ -63,16 +63,18 @@ let insert_set_sql set =
     "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "
       ^ "select nextval('exercise_set_seq'), " 
       ^ string_of_int(set.Model.session_id) ^ ", "
-      ^ set.exercise ^ ", "
+      ^ "'" ^ set.exercise ^ "', "
       ^ string_of_int(set.sets) ^ ", "
       ^ string_of_int(set.reps_per_set) ^ ", "
-      ^ string_of_int(set.weight) ^ ", "
+      ^ string_of_int(set.weight) 
 
-let insert_exercise_set con_str set =
+let insert_exercise_set set =
   print_endline "doing set insert";
   try
     let con = new connection ~conninfo:conn_str () in
       con#send_query(insert_set_sql set);
+      let res=con#get_result in
+        result_status(Util.opt_get(res));
       "OK"
   with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
 
@@ -88,7 +90,6 @@ let insert_session date_str =
     let con = new connection ~conninfo:conn_str () in
       con#send_query (insert_sql date_str);
       let res=con#get_result in
-        print_endline("prepare has status " );
         result_status(Util.opt_get(res));
     "OK"
   with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
