@@ -38,7 +38,7 @@ let home_page ss =
                                      sets_as_list session.sets]) 
                ss;
              p (string "Enter new session date below!");
-             tag "form" ~attrs:["id","new_session";"action","/submitsession"]
+             tag "form" ~attrs:["id","new_session";"action","submitsession"]
                (list
                  [tag "input" ~attrs:["type","date";"name","Date"] empty;
                  tag "input" ~attrs:["type","submit";"value","Submit"] empty])
@@ -51,7 +51,7 @@ let five_to_one = build_list 1 5 1
 let set_form session_id = 
     html 
       @@ body
-        @@ tag "form" ~attrs:["id","new_set";"action","/submitset"]
+        @@ tag "form" ~attrs:["id","new_set";"action","submitset"]
              (list
                [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
                 br empty;
