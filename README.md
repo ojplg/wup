@@ -1,5 +1,7 @@
 # wup
-Simple web application for some primitive CRUD operations for tracking exercise. I am working on this to learn OCaml.
+Simple web application for some primitive CRUD operations for tracking exercise. I am working on this to learn OCaml. I cannot remember why I named it wup.
+
+[AWS Link](http://ec2-13-59-240-22.us-east-2.compute.amazonaws.com/wup)
 
 I do not understand the OCaml pakaging and build system, so things are even more crufty and primitive than my usual low standard.
 
@@ -11,3 +13,12 @@ I do not understand the OCaml pakaging and build system, so things are even more
 4) The library for Postgres integration seems weakly typed. Why handle everything with strings? Java does much better here, though perhaps a different library does things more tightly. Again, I could be missing a lot of things here.
 5) I do love the great specificity and simplicity of type errors with line and character given. Seems easier than GHC.
 6) I miss list comprehensions.
+
+# TODO
+
+* Smooth out and improve navigation
+* Convert the http query parsing to built-in Uri class
+* Add some logging
+* Add some css, prettify
+* Convert dates to date type and do ordering
+* Clean up problems with URL encoding
