@@ -56,7 +56,7 @@ let submit_session_binding =
 let app =
   Opium.Std.App.empty 
   |> Opium.Std.get "/newset/:session_id" new_set_binding
-  |> Opium.Std.get "/submitset" submit_set_binding
+  |> Opium.Std.get "/newset/submitset" submit_set_binding
   |> Opium.Std.get "/submitsession" submit_session_binding
   |> Opium.Std.get "/" home_page_binding
 
