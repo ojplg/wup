@@ -25,7 +25,7 @@ let display set = set.Model.exercise
 let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 
 let session_link id date_str =
-  let url = Uri.of_string("/newset/" ^ string_of_int(id)) in
+  let url = Uri.of_string("newset/" ^ string_of_int(id)) in
     a url (string date_str)
 
 let home_page ss = 
