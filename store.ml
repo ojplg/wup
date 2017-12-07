@@ -73,8 +73,8 @@ let insert_exercise_set con_str set =
       con#send_query(insert_set_sql set);
       let res=con#get_result in
         result_status(Util.opt_get(res));
-      "OK"
-  with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
+      None
+  with Postgresql.Error(m) -> Some (string_of_error(m))
 
 (* EXERCISE_SESSION table *)
 
@@ -89,8 +89,8 @@ let insert_session con_str date_str =
       con#send_query (insert_sql date_str);
       let res=con#get_result in
         result_status(Util.opt_get(res));
-    "OK"
-  with Postgresql.Error(m) -> "BAD " ^ string_of_error(m)
+        None
+  with Postgresql.Error(m) -> Some (string_of_error(m))
 
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)

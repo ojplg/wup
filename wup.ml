@@ -18,6 +18,15 @@ let home_page con_str =
     Store.find_all_sessions con_str
       |> Html.home_page
 
+let error_page error =
+  error 
+    |> Html.simple_page
+
+let home_or_error possible_error = 
+  match possible_error with
+  | Some error -> error_page error
+  | None       -> home_page conn_str
+
 let home_page_binding = 
     begin
       fun req -> 
@@ -42,7 +51,7 @@ let submit_set_binding =
           req
         |> parse_set_from_request
         |> Store.insert_exercise_set conn_str
-        |> Html.simple_page
+        |> home_or_error
         |> Html.render
         |> Opium.Std.respond'
      end
@@ -53,7 +62,7 @@ let submit_session_binding =
           req 
         |> parse_date_from_request
         |> Store.insert_session conn_str
-        |> Html.simple_page
+        |> home_or_error
         |> Html.render
         |> Opium.Std.respond'
     end
