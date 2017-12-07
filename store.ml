@@ -1,8 +1,6 @@
 open Core
 open Postgresql
 
-let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
-
 let print_conn_info conn =
   printf "db      = %s\n" conn#db;
   printf "user    = %s\n" conn#user;
@@ -68,10 +66,10 @@ let insert_set_sql set =
       ^ string_of_int(set.reps_per_set) ^ ", "
       ^ string_of_int(set.weight) 
 
-let insert_exercise_set set =
+let insert_exercise_set con_str set =
   print_endline "doing set insert";
   try
-    let con = new connection ~conninfo:conn_str () in
+    let con = new connection ~conninfo:con_str () in
       con#send_query(insert_set_sql set);
       let res=con#get_result in
         result_status(Util.opt_get(res));
@@ -84,10 +82,10 @@ let insert_sql date_str =
        "insert into exercise_sessions (id, session_date) " 
            ^ "select nextval('exercise_session_seq'), '" ^ date_str ^ "'"
 
-let insert_session date_str = 
+let insert_session con_str date_str = 
   print_endline "doing session insert";
   try
-    let con = new connection ~conninfo:conn_str () in
+    let con = new connection ~conninfo:con_str () in
       con#send_query (insert_sql date_str);
       let res=con#get_result in
         result_status(Util.opt_get(res));

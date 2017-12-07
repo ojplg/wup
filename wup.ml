@@ -1,5 +1,7 @@
 open Core
 
+let conn_str="host=localhost dbname=wup user=wupuser password=wupuserpass"
+
 let parse_set_from_request req = 
     let params = 
         Http.extract_query_parameters req in
@@ -12,12 +14,15 @@ let parse_set_from_request req =
 let parse_date_from_request req = 
     Http.find_string_param (Http.extract_query_parameters req) "Date"
       
+let home_page con_str = 
+    Store.find_all_sessions con_str
+      |> Html.home_page
+
 let home_page_binding = 
     begin
       fun req -> 
           print_endline("Serving home page"); 
-          Store.find_all_sessions Store.conn_str
-        |> Html.home_page 
+          home_page conn_str
         |> Html.render
         |> Opium.Std.respond'
     end
@@ -36,7 +41,7 @@ let submit_set_binding =
       fun req -> 
           req
         |> parse_set_from_request
-        |> Store.insert_exercise_set 
+        |> Store.insert_exercise_set conn_str
         |> Html.simple_page
         |> Html.render
         |> Opium.Std.respond'
@@ -47,7 +52,7 @@ let submit_session_binding =
       fun req -> 
           req 
         |> parse_date_from_request
-        |> Store.insert_session
+        |> Store.insert_session conn_str
         |> Html.simple_page
         |> Html.render
         |> Opium.Std.respond'

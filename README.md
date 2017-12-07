@@ -13,6 +13,7 @@ I do not understand the OCaml pakaging and build system, so things are even more
 4) The library for Postgres integration seems weakly typed. Why handle everything with strings? Java does much better here, though perhaps a different library does things more tightly. Again, I could be missing a lot of things here.
 5) I do love the great specificity and simplicity of type errors with line and character given. Seems easier than GHC.
 6) I miss list comprehensions.
+7) What's with the one-pass compiler? I have to write my functions in the correct order? Annoying.
 
 # TODO
 
