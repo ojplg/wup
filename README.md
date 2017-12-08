@@ -18,8 +18,6 @@ I do not understand the OCaml pakaging and build system, so things are even more
 # TODO
 
 * Smooth out and improve navigation
-* Convert the http query parsing to built-in Uri class
 * Add some logging
 * Add some css, prettify
 * Convert dates to date type and do ordering
-* Clean up problems with URL encoding
