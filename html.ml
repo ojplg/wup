@@ -51,7 +51,7 @@ let five_to_one = build_list 1 5 1
 let set_form session_id = 
     html 
       @@ body
-        @@ tag "form" ~attrs:["id","new_set";"action","submitset"]
+        @@ tag "form" ~attrs:["id","new_set";"action","../submitset"]
              (list
                [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
                 br empty;
