@@ -16,6 +16,20 @@ let select form_id name opts = tag "select"
                                    (list (List.map opts 
                                                    (fun opt -> tag "option" (string opt))))
 
+let css = tag 
+    "link" 
+    ~attrs:["rel","stylesheet";
+            "href","https://unpkg.com/purecss@1.0.0/build/pure-min.css";
+            "integrity","sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w";
+            "crossorigin","anonymous"]
+    empty
+
+let header =
+    head 
+      (list
+        [title (string "Wup");
+         css])
+
 let display set = set.Model.exercise 
                     ^ " - " 
                     ^ string_of_int (set.sets * set.reps_per_set)
@@ -30,44 +44,50 @@ let session_link id date_str =
 
 let home_page ss = 
       html 
-        @@ body 
-          (list
-            [p (string "Welcome");
-             Create.table ~flags:[] 
-               ~row:(fun session -> [session_link session.Model.id session.Model.date; 
-                                     sets_as_list session.sets]) 
-               ss;
-             p (string "Enter new session date below!");
-             tag "form" ~attrs:["id","new_session";"action","submitsession"]
-               (list
-                 [tag "input" ~attrs:["type","date";"name","Date"] empty;
-                 tag "input" ~attrs:["type","submit";"value","Submit"] empty])
-            ]
-          )
+        (list 
+          [header;
+           body 
+            (list
+              [p (string "Welcome");
+               Create.table ~flags:[] 
+                 ~row:(fun session -> [session_link session.Model.id session.Model.date; 
+                                       sets_as_list session.sets]) 
+                 ss;
+               p (string "Enter new session date below!");
+               tag "form" ~attrs:["id","new_session";"action","submitsession"]
+                 (list
+                   [tag "input" ~attrs:["type","date";"name","Date"] empty;
+                   tag "input" ~attrs:["type","submit";"value","Submit"] empty])
+              ]
+            )
+          ]
+        )
 
 let weights = build_list 65 185 5
 let five_to_one = build_list 1 5 1
 
 let set_form session_id = 
     html 
-      @@ body
-        @@ tag "form" ~attrs:["id","new_set";"action","../submitset"]
-             (list
-               [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
-                br empty;
-                label "Movement";
-                select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
-                br empty;
-                label "Sets";
-                select "new_set" "Sets" five_to_one;
-                br empty;
-                label "Repetitions";
-                select "new_set" "Repetitions" five_to_one;
-                br empty;
-                label "Weight";
-                select "new_set" "Weights" weights;
-                br empty;
-                tag "input" ~attrs:["type","submit";"value","Submit"] empty])
+      (list 
+        [header;
+         body
+           @@ tag "form" ~attrs:["id","new_set";"action","../submitset"]
+               (list
+                 [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
+                  br empty;
+                  label "Movement";
+                  select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
+                  br empty;
+                  label "Sets";
+                  select "new_set" "Sets" five_to_one;
+                  br empty;
+                  label "Repetitions";
+                  select "new_set" "Repetitions" five_to_one;
+                  br empty;
+                  label "Weight";
+                  select "new_set" "Weights" weights;
+                  br empty;
+                  tag "input" ~attrs:["type","submit";"value","Submit"] empty])])
 
 
 let simple_page content = html @@ body @@ p (string content)
