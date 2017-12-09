@@ -64,6 +64,7 @@ let submit_session_binding =
       fun req -> 
           req 
         |> Fn.flip get_query_param "Date"
+        |> Date.of_string
         |> Store.insert_session conn_str
         |> home_or_error
         |> Html.render

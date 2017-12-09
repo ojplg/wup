@@ -80,7 +80,7 @@ let insert_exercise_set con_str set =
 
 let insert_sql date_str =
        "insert into exercise_sessions (id, session_date) " 
-           ^ "select nextval('exercise_session_seq'), '" ^ date_str ^ "'"
+           ^ "select nextval('exercise_session_seq'), '" ^ Date.to_string_american( date_str ) ^ "'"
 
 let insert_session con_str date_str = 
   print_endline "doing session insert";
@@ -108,6 +108,6 @@ let find_all_sessions con_str =
       List.map ss 
                (fun sess_tuple-> 
                  { Model.id=fst sess_tuple;
-                   Model.date=snd sess_tuple;
+                   Model.date=Date.of_string(snd sess_tuple);
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
 
