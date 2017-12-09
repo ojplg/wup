@@ -41,7 +41,24 @@ let sets_as_list sets = ul (List.map sets (fun s -> string (display s)))
 let session_link id date_str =
   let url = Uri.of_string("newset/" ^ string_of_int(id)) in
     a url (string (Date.to_string_american date_str))
-
+ 
+let home_table ss =
+    tag "table"
+      ~attrs:["class","pure-table pure-table-bordered"] 
+      (list
+        (List.map 
+          ss
+          (fun session -> 
+            tag "tr" 
+              ~attrs:[]
+              (list 
+                [tag "td"
+                  ~attrs:[]
+                  (session_link session.Model.id session.Model.date);
+                 tag "td" 
+                   ~attrs:[]
+                   (sets_as_list session.sets)])) ))
+ 
 let home_page ss = 
       html 
         (list 
@@ -49,10 +66,7 @@ let home_page ss =
            body 
             (list
               [p (string "Welcome");
-               Create.table ~flags:[] 
-                 ~row:(fun session -> [session_link session.Model.id session.Model.date; 
-                                       sets_as_list session.sets]) 
-                 ss;
+               home_table ss;
                p (string "Enter new session date below!");
                tag "form" ~attrs:["id","new_session";"action","submitsession"]
                  (list
