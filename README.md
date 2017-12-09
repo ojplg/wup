@@ -17,6 +17,8 @@ I do not understand the OCaml pakaging and build system, so things are even more
 
 # TODO
 
-* Smooth out and improve navigation
 * Add some logging
 * Add some css, prettify
+* Copy button
+* Default date for sessions to today
+
