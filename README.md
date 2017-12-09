@@ -20,4 +20,3 @@ I do not understand the OCaml pakaging and build system, so things are even more
 * Smooth out and improve navigation
 * Add some logging
 * Add some css, prettify
-* Convert dates to date type and do ordering
