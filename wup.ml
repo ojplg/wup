@@ -19,6 +19,7 @@ let parse_set_from_request req =
                            
 let home_page con_str = 
     Store.find_all_sessions con_str
+      |> Model.sort_sessions
       |> Html.home_page
 
 let error_page error =

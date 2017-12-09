@@ -24,3 +24,10 @@ let set_to_string set =
 let session_to_string sess = 
     "Session. " ^ (Date.to_string_american (sess.date))
       ^ String.concat ~sep:"\n" (List.map sess.sets set_to_string)
+
+let session_comparator sess_one sess_two =
+    Date.diff sess_one.date sess_two.date
+   
+let sort_sessions ss = 
+    List.sort session_comparator ss
+      |> List.rev
