@@ -24,6 +24,10 @@ let css = tag
             "crossorigin","anonymous"]
     empty
 
+let today_string time_now =
+  let tz = Time.Zone.of_utc_offset(-6) in
+    Time.format time_now "%Y-%m-%d" tz
+
 let header =
     head 
       (list
@@ -70,7 +74,9 @@ let home_page ss =
                p (string "Enter new session date below!");
                tag "form" ~attrs:["id","new_session";"action","submitsession"]
                  (list
-                   [tag "input" ~attrs:["type","date";"name","Date"] empty;
+                   [tag "input" ~attrs:["type","date";
+                                        "name","Date";
+                                        "value",today_string (Time.now ())] empty;
                    tag "input" ~attrs:["type","submit";"value","Submit"] empty])
               ]
             )
