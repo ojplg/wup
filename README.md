@@ -18,7 +18,6 @@ I do not understand the OCaml pakaging and build system, so things are even more
 # TODO
 
 * Add some logging
-* Add some css, prettify
 * Copy button
 * Default date for sessions to today
 

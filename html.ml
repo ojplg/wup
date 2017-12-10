@@ -85,23 +85,32 @@ let set_form session_id =
       (list 
         [header;
          body
-           @@ tag "form" ~attrs:["id","new_set";"action","../submitset"]
+           @@ tag "form" ~attrs:["id","new_set";
+                                 "action","../submitset";
+                                 "class","pure-form pure-form-aligned"]
                (list
                  [tag "input" ~attrs:["type","hidden";"value",session_id;"name","Session"] empty;
-                  br empty;
-                  label "Movement";
-                  select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"];
-                  br empty;
-                  label "Sets";
-                  select "new_set" "Sets" five_to_one;
-                  br empty;
-                  label "Repetitions";
-                  select "new_set" "Repetitions" five_to_one;
-                  br empty;
-                  label "Weight";
-                  select "new_set" "Weights" weights;
-                  br empty;
-                  tag "input" ~attrs:["type","submit";"value","Submit"] empty])])
+                  div ~attrs:["class","pure-control-group"]
+                    (list [
+                      label "Movement";
+                      select "new_set" "Movement" ["Squat"; "Bench"; "Barbell Row"; "Overhead Press"; "Deadlift"]]);
+                  div ~attrs:["class","pure-control-group"]
+                    (list [
+                       label "Sets";
+                       select "new_set" "Sets" five_to_one]);
+                  div ~attrs:["class","pure-control-group"]
+                    (list [
+                      label "Repetitions";
+                      select "new_set" "Repetitions" five_to_one]);
+                  div ~attrs:["class","pure-control-group"]
+                    (list [
+                      label "Weight";
+                      select "new_set" "Weights" weights]);
+                  tag "input" 
+                      ~attrs:["type","submit";
+                              "value","Submit";
+                              "class","pure-controls"]
+                       empty])])
 
 
 let simple_page content = html @@ body @@ p (string content)
