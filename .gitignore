@@ -21,3 +21,6 @@ setup.log
 
 wup
 *.swp
+wup.out
+wup.pid
+nohup.out
