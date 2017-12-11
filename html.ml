@@ -69,19 +69,21 @@ let home_page ss =
           [header;
            body 
             (list
-              [p (string "Welcome");
-               home_table ss;
-               p (string "Enter new session date below!");
-               tag "form" ~attrs:["id","new_session";"action","submitsession"]
-                 (list
-                   [tag "input" ~attrs:["type","date";
-                                        "name","Date";
-                                        "value",today_string (Time.now ())] empty;
-                   tag "input" ~attrs:["type","submit";"value","Submit"] empty])
-              ]
-            )
-          ]
-        )
+              [p (string "WUP.");
+               tag "form" 
+                   ~attrs:["id","new_session";
+                           "action","submitsession"]
+                   (list
+                     [tag "input" 
+                          ~attrs:["type","date";
+                                  "name","Date";
+                                  "value",today_string (Time.now ())] 
+                          empty;
+                     tag "input" 
+                          ~attrs:["type","submit";
+                                  "value","Submit"] 
+                          empty]);
+                home_table ss;])])
 
 let weights = build_list 65 185 5
 let five_to_one = build_list 1 5 1
