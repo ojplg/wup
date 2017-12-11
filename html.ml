@@ -74,7 +74,8 @@ let home_page ss =
                    ~attrs:["id","new_session";
                            "action","submitsession"]
                    (list
-                     [tag "input" 
+                    [span (string "New: "); 
+                     tag "input" 
                           ~attrs:["type","date";
                                   "name","Date";
                                   "value",today_string (Time.now ())] 
