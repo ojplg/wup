@@ -11,10 +11,13 @@ let build_list low high increment =
 
 let label lbl = tag "label" (string lbl)
 
-let select form_id name opts = tag "select" 
-                                   ~attrs:["form", form_id; "name", name] 
-                                   (list (List.map opts 
-                                                   (fun opt -> tag "option" (string opt))))
+let select form_id name opts = 
+    tag "select" 
+        ~attrs:["form", form_id; 
+                "name", name] 
+        @@ list 
+          @@ List.map opts 
+                      (fun opt -> tag "option" @@ string opt)
 
 let css = tag 
     "link" 
@@ -49,19 +52,21 @@ let session_link id date_str =
 let home_table ss =
     tag "table"
       ~attrs:["class","pure-table pure-table-bordered"] 
-      (list
-        (List.map 
-          ss
-          (fun session -> 
-            tag "tr" 
-              ~attrs:[]
-              (list 
-                [tag "td"
-                  ~attrs:[]
-                  (session_link session.Model.id session.Model.date);
-                 tag "td" 
-                   ~attrs:[]
-                   (sets_as_list session.sets)])) ))
+      @@ list
+        @@ List.map 
+             ss
+             (fun session -> 
+                tag "tr" 
+                    ~attrs:[]
+                    @@ list 
+                      [tag "td"
+                           ~attrs:[]
+                           (session_link 
+                              session.Model.id 
+                              session.Model.date);
+                        tag "td" 
+                            ~attrs:[]
+                            (sets_as_list session.sets)])
  
 let home_page ss = 
       html 
