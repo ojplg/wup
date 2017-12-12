@@ -32,10 +32,10 @@ let today_string time_now =
     Time.format time_now "%Y-%m-%d" tz
 
 let header =
-    head 
-      (list
-        [title (string "Wup");
-         css])
+    head  
+      @@ list
+           [title (string "Wup");
+            css]
 
 let display set = set.Model.exercise 
                     ^ " - " 
