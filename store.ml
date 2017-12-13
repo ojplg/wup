@@ -111,3 +111,9 @@ let find_all_sessions con_str =
                    Model.date=Date.of_string(snd sess_tuple);
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
 
+let copy_sql from_id to_id =
+    "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "
+      ^ "select nextval('exercise_set_seq'), " 
+      ^ to_id ^ " , exercise, sets, reps_per_set, weight "
+      ^ "from exercise_sets "
+      ^ "where session_id = " ^ from_id ^ ";"
