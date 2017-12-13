@@ -49,6 +49,10 @@ let session_link id date_str =
   let url = Uri.of_string("newset/" ^ string_of_int(id)) in
     a url (string (Date.to_string_american date_str))
  
+let copy_link id =
+  let url = Uri.of_string("copy/" ^ string_of_int id ) in 
+    a url (string "copy")
+
 let home_table ss =
     tag "table"
       ~attrs:["class","pure-table pure-table-bordered"] 
@@ -60,13 +64,12 @@ let home_table ss =
                     ~attrs:[]
                     @@ list 
                       [tag "td"
-                           ~attrs:[]
                            (session_link 
                               session.Model.id 
                               session.Model.date);
                         tag "td" 
-                            ~attrs:[]
-                            (sets_as_list session.sets)])
+                            (sets_as_list session.sets);
+                        tag "td" (copy_link session.Model.id)])
  
 let home_page ss = 
       html 

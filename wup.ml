@@ -72,11 +72,22 @@ let submit_session_binding =
         |> Opium.Std.respond'
     end
 
+let copy_session_binding = 
+    begin
+      fun req -> 
+          Opium.Std.param req "session_id"
+        |> Store.copy_session conn_str (Html.today_string @@  Time.now ())
+        |> home_or_error
+        |> Html.render
+        |> Opium.Std.respond'
+    end
+
 let app =
   Opium.Std.App.empty 
   |> Opium.Std.get "/newset/:session_id" new_set_binding
   |> Opium.Std.get "/submitset" submit_set_binding
   |> Opium.Std.get "/submitsession" submit_session_binding
+  |> Opium.Std.get "/copy/:session_id" copy_session_binding
   |> Opium.Std.get "/" home_page_binding
 
 let () =
