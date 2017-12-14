@@ -82,11 +82,11 @@ let insert_sql date_str =
        "insert into exercise_sessions (id, session_date) " 
            ^ "select nextval('exercise_session_seq'), '" ^ Date.to_string_american( date_str ) ^ "'"
 
-let insert_session con_str date_str = 
+let insert_session con_str date = 
   print_endline "doing session insert";
   try
     let con = new connection ~conninfo:con_str () in
-      con#send_query (insert_sql date_str);
+      con#send_query (insert_sql date);
       let res=con#get_result in
         result_status(Util.opt_get(res));
         None
@@ -100,6 +100,11 @@ let find_exercise_sessions con_str = find_all_data
                                      "select id,session_date from exercise_sessions" 
                                      parse_session_tuple
 
+let find_session con_str date_str =
+    let sql = "select id, session_date from exercise_sessions "
+                ^ " where session_date ='" ^ date_str ^ "'"
+      in List.hd @@ find_all_data con_str sql parse_session_tuple
+
 let find_all_sessions con_str =
   print_endline("Finding sessions");
   let ss = find_exercise_sessions con_str in
@@ -112,11 +117,10 @@ let find_all_sessions con_str =
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
 
 let copy_session con_str date_str session_id =
-    (*
-    print_endline ("Copying session " ^ con_str ^ (string_of_int session_id));
-    *)
-    None
-  
+    print_endline ("Copying session " ^ con_str ^ session_id);
+    let result = insert_session con_str (Date.of_string date_str); in
+      let new_session = find_session con_str date_str in
+        Some (date_str ^ (Util.opt_get result))
 
 let copy_sql from_id to_id =
     "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "

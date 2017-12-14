@@ -76,7 +76,7 @@ let copy_session_binding =
     begin
       fun req -> 
           Opium.Std.param req "session_id"
-        |> Store.copy_session conn_str (Html.today_string @@  Time.now ())
+        |> Store.copy_session conn_str (Html.today_string (Time.now ()))
         |> home_or_error
         |> Html.render
         |> Opium.Std.respond'
