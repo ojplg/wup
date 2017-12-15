@@ -117,16 +117,25 @@ let find_all_sessions con_str =
                    Model.date=Date.of_string(snd sess_tuple);
                    sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
 
-let copy_session con_str date_str session_id =
-    print_endline ("Copying session " ^ date_str ^ " id " ^ session_id);
-    let result = insert_session con_str (Date.of_string date_str); in
-      print_endline("Did insert ");
-      let new_session_tuple = find_session con_str date_str in 
-        Some (date_str ^  string_of_int @@ fst (Util.opt_get new_session_tuple))
-
 let copy_sql from_id to_id =
     "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "
       ^ "select nextval('exercise_set_seq'), " 
       ^ to_id ^ " , exercise, sets, reps_per_set, weight "
       ^ "from exercise_sets "
       ^ "where session_id = " ^ from_id ^ ";"
+
+let execute_copy con_str old_session_id new_session_id =
+    let sql = copy_sql old_session_id new_session_id in
+      let con = new connection ~conninfo:con_str () in
+        con#send_query sql
+
+let copy_session con_str date_str session_id =
+    print_endline ("Copying session " ^ date_str ^ " id " ^ session_id);
+    insert_session con_str (Date.of_string date_str); 
+    print_endline("Did insert ");
+    let new_session_tuple = find_session con_str date_str in 
+      let new_session_id = fst (Util.opt_get new_session_tuple) in 
+        execute_copy con_str session_id (string_of_int new_session_id);
+    Some "foo"
+    
+
