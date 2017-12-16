@@ -106,16 +106,21 @@ let find_session con_str date_str =
                 ^ " where session_date ='" ^ date_str ^ "'"
       in List.hd @@ find_all_data con_str sql parse_session_tuple
 
+let db_tuple_to_session sets tuple =
+    { 
+      Model.id   = fst tuple;
+      Model.date = Date.of_string @@ snd tuple;
+      Model.sets = List.filter 
+                     sets
+                     (fun set-> set.Model.session_id = fst tuple);
+    }
+
 let find_all_sessions con_str =
   print_endline("Finding sessions");
   let ss = find_exercise_sessions con_str in
     print_endline("Found some sessions " ^ (string_of_int (List.length ss)));
     let sets = find_exercise_sets con_str in
-      List.map ss 
-               (fun sess_tuple-> 
-                 { Model.id=fst sess_tuple;
-                   Model.date=Date.of_string(snd sess_tuple);
-                   sets=List.filter sets (fun set->set.session_id=fst sess_tuple); }) 
+      List.map ss (db_tuple_to_session sets)
 
 let copy_sql from_id to_id =
     "insert into exercise_sets (id, session_id, exercise, sets, reps_per_set, weight) "
