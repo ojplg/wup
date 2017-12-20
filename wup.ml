@@ -29,7 +29,9 @@ let error_page error =
 let home_or_error possible_error = 
   match possible_error with
   | Some error -> error_page error
-  | None       -> home_page conn_str
+                  |> Html.render
+                  |> Opium.Std.respond'
+  | None       -> Opium.Std.redirect' @@ Uri.of_string "/"
 
 let home_page_binding = 
     begin
@@ -56,8 +58,6 @@ let submit_set_binding =
         |> parse_set_from_request
         |> Store.insert_exercise_set conn_str
         |> home_or_error
-        |> Html.render
-        |> Opium.Std.respond'
      end
 
 let submit_session_binding = 
@@ -68,8 +68,6 @@ let submit_session_binding =
         |> Date.of_string
         |> Store.insert_session conn_str
         |> home_or_error
-        |> Html.render
-        |> Opium.Std.respond'
     end
 
 let copy_session_binding = 
@@ -78,8 +76,6 @@ let copy_session_binding =
           Opium.Std.param req "session_id"
         |> Store.copy_session conn_str (Html.today_string (Time.now ()))
         |> home_or_error
-        |> Html.render
-        |> Opium.Std.respond'
     end
 
 let app =
