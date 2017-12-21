@@ -3,6 +3,7 @@ eval `opam config env`
 PACKAGES=async\
 ,core\
 ,cow\
+,logs\
 ,opium\
 ,postgresql
 

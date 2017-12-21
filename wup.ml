@@ -36,7 +36,7 @@ let home_or_error possible_error =
 let home_page_binding = 
     begin
       fun req -> 
-          print_endline("Serving home page"); 
+          Logs.info (fun m -> m "Home page requested");
           home_page conn_str
         |> Html.render
         |> Opium.Std.respond'
@@ -87,6 +87,9 @@ let app =
   |> Opium.Std.get "/" home_page_binding
 
 let () =
+  Logs.set_reporter (Logs.format_reporter ());
+  Logs.set_level (Some Logs.Info);
+  Logs.info (fun m -> m "Starting");
   app
   |> Opium.Std.App.run_command
 
