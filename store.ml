@@ -136,11 +136,14 @@ let execute_copy con_str old_session_id new_session_id =
 
 let copy_session con_str date_str session_id =
     print_endline ("Copying session " ^ date_str ^ " id " ^ session_id);
-    insert_session con_str (Date.of_string date_str); 
-    print_endline("Did insert ");
-    let new_session_tuple = find_session con_str date_str in 
-      let new_session_id = fst (Util.opt_get new_session_tuple) in 
-        execute_copy con_str session_id (string_of_int new_session_id);
-    Some "foo"
+    let insert_result = insert_session con_str (Date.of_string date_str); in
+    match insert_result with
+      | None -> print_endline("Did insert ");
+                let new_session_tuple = find_session con_str date_str in 
+                  let new_session_id = fst (Util.opt_get new_session_tuple) in 
+
+                    execute_copy con_str session_id (string_of_int new_session_id);
+                    None
+      | Some x -> Some x
     
 
