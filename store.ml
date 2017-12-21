@@ -30,7 +30,7 @@ let rec parse_results_recurse results idx ls datum_parser =
 
 let execute_result_set con datum_parser =
   match con#get_result with
-  | Some res -> print_endline("Found results with " ^ (string_of_int res#ntuples));
+  | Some res -> Logs.info(fun m -> m "Found results with %d" res#ntuples);
                 parse_results_recurse res 0 [] datum_parser;
   | None     -> []
 
@@ -39,7 +39,10 @@ let find_all_data con_str query datum_parser =
     let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query query;
       execute_result_set con datum_parser
-  with Postgresql.Error(m) -> print_endline("BAD " ^ Postgresql.string_of_error(m)); []
+  with Postgresql.Error(e) -> 
+         let msg = Postgresql.string_of_error(e) in
+           Logs.info (fun m -> m "DB error: %s" msg); 
+         []
 
 (* EXERCISE_SET table *)
 
@@ -67,7 +70,7 @@ let insert_set_sql set =
       ^ string_of_int(set.weight) 
 
 let insert_exercise_set con_str set =
-  print_endline "doing set insert";
+  Logs.info (fun m -> m "doing set insert");
   try
     let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query(insert_set_sql set);
@@ -83,7 +86,7 @@ let insert_sql date_str =
            ^ "select nextval('exercise_session_seq'), '" ^ Date.to_string_american( date_str ) ^ "'"
 
 let insert_session con_str date = 
-  print_endline "doing session insert";
+  Logs.info (fun m -> m "doing session insert");
   try
     let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query (insert_sql date);
@@ -101,7 +104,7 @@ let find_exercise_sessions con_str = find_all_data
                                      parse_session_tuple
 
 let find_session con_str date_str =
-    print_endline ("Searching for session " ^ date_str);
+    Logs.info (fun m -> m "Searching for session %s" date_str);
     let sql = "select id, session_date from exercise_sessions "
                 ^ " where session_date ='" ^ date_str ^ "'"
       in List.hd @@ find_all_data con_str sql parse_session_tuple
