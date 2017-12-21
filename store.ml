@@ -1,25 +1,25 @@
 open Core
-open Postgresql
 
-let print_conn_info conn =
-  printf "db      = %s\n" conn#db;
-  printf "user    = %s\n" conn#user;
-  printf "pass    = %s\n" conn#pass;
-  printf "host    = %s\n" conn#host;
-  printf "port    = %s\n" conn#port;
-  printf "tty     = %s\n" conn#tty;
-  printf "option  = %s\n" conn#options;
-  printf "pid     = %i\n" conn#backend_pid
+let get_connection_info conn =
+     "db      = " ^ conn#db     ^ "\n" 
+   ^ "user    = " ^ conn#user   ^ "\n"
+   ^ "pass    = " ^ conn#pass   ^ "\n"
+   ^ "host    = " ^ conn#host   ^ "\n"
+   ^ "port    = " ^ conn#port   ^ "\n"
+   ^ "tty     = " ^ conn#tty    ^ "\n"
+   ^ "option  = " ^ conn#options     ^ "\n"
+   ^ "pid     = " ^ conn#backend_pid ^ "\n"
 
 let result_status res =
-  match res#status with
-  | Empty_query -> print_endline("empty query")
-  | Command_ok -> print_endline("Command ok")
-  | Tuples_ok -> print_endline("Tuples ok")
-  | Bad_response -> print_endline("Bad response")
-  | Nonfatal_error -> print_endline("error")
-  | Fatal_error -> print_endline("fatal error " ^ res#error)
-  | _         -> print_endline("Do not know")
+    let msg = match res#status with
+      | Postgresql.Empty_query     -> "Empty query"
+      | Postgresql.Command_ok      -> "Command ok"
+      | Postgresql.Tuples_ok       -> "Tuples ok"
+      | Postgresql.Bad_response    -> "Bad response"
+      | Postgresql.Nonfatal_error  -> "Non fatal error"
+      | Postgresql.Fatal_error     -> "fatal error " ^ res#error
+      | _                          -> "Do not know"
+      in Logs.info (fun m -> m "Result: %s" msg)
 
 (* framework functions - find all functions *)
 
@@ -36,10 +36,10 @@ let execute_result_set con datum_parser =
 
 let find_all_data con_str query datum_parser =
   try
-    let con = new connection ~conninfo:con_str () in
+    let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query query;
       execute_result_set con datum_parser
-  with Postgresql.Error(m) -> print_endline("BAD " ^ string_of_error(m)); []
+  with Postgresql.Error(m) -> print_endline("BAD " ^ Postgresql.string_of_error(m)); []
 
 (* EXERCISE_SET table *)
 
@@ -69,12 +69,12 @@ let insert_set_sql set =
 let insert_exercise_set con_str set =
   print_endline "doing set insert";
   try
-    let con = new connection ~conninfo:con_str () in
+    let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query(insert_set_sql set);
       let res=con#get_result in
         result_status(Util.opt_get(res));
-      None
-  with Postgresql.Error(m) -> Some (string_of_error(m))
+        None
+  with Postgresql.Error(m) -> Some (Postgresql.string_of_error(m))
 
 (* EXERCISE_SESSION table *)
 
@@ -85,12 +85,12 @@ let insert_sql date_str =
 let insert_session con_str date = 
   print_endline "doing session insert";
   try
-    let con = new connection ~conninfo:con_str () in
+    let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query (insert_sql date);
       let res=con#get_result in
         result_status(Util.opt_get(res));
         None
-  with Postgresql.Error(m) -> Some (string_of_error(m))
+  with Postgresql.Error(m) -> Some (Postgresql.string_of_error(m))
 
 let parse_session_tuple results idx =
   ( int_of_string(results#getvalue idx 0), results#getvalue idx 1)
@@ -131,7 +131,7 @@ let copy_sql from_id to_id =
 
 let execute_copy con_str old_session_id new_session_id =
     let sql = copy_sql old_session_id new_session_id in
-      let con = new connection ~conninfo:con_str () in
+      let con = new Postgresql.connection ~conninfo:con_str () in
         con#send_query sql
 
 let copy_session con_str date_str session_id =
