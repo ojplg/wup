@@ -17,6 +17,6 @@ I do not understand the OCaml pakaging and build system, so things are even more
 
 # TODO
 
-* Add some logging
-* Copy button
+* Deletion for bad elements
+* Push errors to user
 
