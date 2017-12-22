@@ -119,9 +119,9 @@ let db_tuple_to_session sets tuple =
     }
 
 let find_all_sessions con_str =
-  print_endline("Finding sessions");
+  Logs.info (fun m -> m "Finding sessions");
   let ss = find_exercise_sessions con_str in
-    print_endline("Found some sessions " ^ (string_of_int (List.length ss)));
+    Logs.info (fun m -> m "Found some sessions %d" (List.length ss));
     let sets = find_exercise_sets con_str in
       List.map ss (db_tuple_to_session sets)
 
@@ -138,10 +138,10 @@ let execute_copy con_str old_session_id new_session_id =
         con#send_query sql
 
 let copy_session con_str date_str session_id =
-    print_endline ("Copying session " ^ date_str ^ " id " ^ session_id);
+    Logs.info (fun m -> m "Copying session %s id %s " date_str session_id);
     let insert_result = insert_session con_str (Date.of_string date_str); in
     match insert_result with
-      | None -> print_endline("Did insert ");
+      | None -> Logs.info (fun m -> m "Did insert ");
                 let new_session_tuple = find_session con_str date_str in 
                   let new_session_id = fst (Util.opt_get new_session_tuple) in 
 
