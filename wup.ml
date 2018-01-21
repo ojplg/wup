@@ -28,10 +28,12 @@ let error_page error =
 
 let home_or_error possible_error = 
   match possible_error with
-  | Some error -> error_page error
+  | Some error -> Logs.info (fun m -> m "Had an error");
+                     error_page error
                   |> Html.render
                   |> Opium.Std.respond'
-  | None       -> Opium.Std.redirect' @@ Uri.of_string "/"
+  | None       -> Logs.info (fun m -> m "No error");
+                  Opium.Std.redirect' @@ Uri.of_string "home"
 
 let home_page_binding = 
     begin
@@ -45,6 +47,7 @@ let home_page_binding =
 let new_set_binding = 
     begin
       fun req -> 
+          Logs.info (fun m -> m "New set form requested");
           Opium.Std.param req "session_id"
         |> Html.set_form 
         |> Html.render
@@ -54,6 +57,7 @@ let new_set_binding =
 let submit_set_binding = 
     begin
       fun req -> 
+          Logs.info ( fun m -> m "New set submitted");
           req
         |> parse_set_from_request
         |> Store.insert_exercise_set conn_str
@@ -70,6 +74,7 @@ let submit_session_binding =
         |> home_or_error
     end
 
+
 let copy_session_binding = 
     begin
       fun req -> 
@@ -85,6 +90,7 @@ let app =
   |> Opium.Std.get "/submitsession" submit_session_binding
   |> Opium.Std.get "/copy/:session_id" copy_session_binding
   |> Opium.Std.get "/" home_page_binding
+  |> Opium.Std.get "/home" home_page_binding
 
 let () =
   Logs.set_reporter (Logs.format_reporter ());
