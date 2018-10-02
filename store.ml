@@ -38,7 +38,9 @@ let find_all_data con_str query datum_parser =
   try
     let con = new Postgresql.connection ~conninfo:con_str () in
       con#send_query query;
-      execute_result_set con datum_parser
+      let results = execute_result_set con datum_parser in
+        con#finish;
+        results
   with Postgresql.Error(e) -> 
          let msg = Postgresql.string_of_error(e) in
            Logs.info (fun m -> m "DB error: %s" msg); 
@@ -76,6 +78,7 @@ let insert_exercise_set con_str set =
       con#send_query(insert_set_sql set);
       let res=con#get_result in
         result_status(Util.opt_get(res));
+        con#finish;
         None
   with Postgresql.Error(m) -> Some (Postgresql.string_of_error(m))
 
@@ -92,6 +95,7 @@ let insert_session con_str date =
       con#send_query (insert_sql date);
       let res=con#get_result in
         result_status(Util.opt_get(res));
+        con#finish;
         None
   with Postgresql.Error(m) -> Some (Postgresql.string_of_error(m))
 
@@ -135,7 +139,8 @@ let copy_sql from_id to_id =
 let execute_copy con_str old_session_id new_session_id =
     let sql = copy_sql old_session_id new_session_id in
       let con = new Postgresql.connection ~conninfo:con_str () in
-        con#send_query sql
+        con#send_query sql;
+        con#finish
 
 let copy_session con_str date_str session_id =
     Logs.info (fun m -> m "Copying session %s id %s " date_str session_id);
