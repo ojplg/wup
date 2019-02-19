@@ -94,7 +94,7 @@ let home_page ss =
                           empty]);
                 home_table ss;])])
 
-let weights = build_list 65 185 5
+let weights = build_list 65 225 5
 let five_to_one = build_list 1 5 1
 
 let set_form session_id = 
