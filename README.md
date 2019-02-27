@@ -1,7 +1,7 @@
 # wup
 Simple web application for some primitive CRUD operations for tracking exercise. I am working on this to learn OCaml. I cannot remember why I named it wup.
 
-[AWS Link](http://ec2-13-59-240-22.us-east-2.compute.amazonaws.com/wup)
+[AWS Link](http://hrorm.org/wup)
 
 I do not understand the OCaml pakaging and build system, so things are even more crufty and primitive than my usual low standard.
 
